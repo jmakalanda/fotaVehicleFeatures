@@ -1,0 +1,28 @@
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+</head>
+<body>
+<h2>
+    Showing values per URL query
+</h2>
+
+<table >
+    <tbody>
+    <tr th:each="vinFeature : ${vinFeatures}">
+        <td> VIN: </td>
+        <td th:text="${vinFeature.vin}"></td>
+        <td th:text="${vinFeature.isCompatible}"></td>
+        <td> compatible </td>
+        <td> feature </td>
+        <td th:text="${vinFeature.feature}"></td>
+
+
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

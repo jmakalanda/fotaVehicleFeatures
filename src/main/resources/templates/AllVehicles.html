@@ -1,0 +1,22 @@
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+</head>
+<body>
+<h2>
+    Showing all vehicles VINs
+</h2>
+
+<table >
+    <tbody>
+    <tr th:each="vehicle : ${vehicles}">
+        <td> VIN: </td>
+        <td th:text="${vehicle.vin}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
