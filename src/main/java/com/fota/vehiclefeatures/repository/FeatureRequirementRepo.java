@@ -27,7 +27,7 @@ public class FeatureRequirementRepo {
 
     public List<VinFeature> getFeatureRequirement(String vin, String feature) {
         List<VinFeature> vinFeatureList = jdbcTemplate.query(
-"SELECT CASE WHEN count(*) > 0 THEN 'NOT' ELSE'IS' END as AllExist " +
+"SELECT CASE WHEN count(*) > 0 THEN 'no' ELSE 'yes' END as AllExist " +
         "from (SELECT F.SOFT_HARD_CODE    " +
         "               FROM FEATURE_REQUIREMENT F    " +
         "               WHERE F.FEATURE_CODE ='"+ feature+"'   " +

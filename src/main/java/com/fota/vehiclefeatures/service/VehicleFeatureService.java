@@ -34,7 +34,7 @@ public class VehicleFeatureService {
         List<VinFeature> vinFeatureList = new ArrayList<>();
 
         for(Feature feature: featureList){
-            vinFeatureList = Stream.concat(vinFeatureList.stream() ,featureRequirementRepo.getFeatureRequirement(vin,feature.getFeatureCode()).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("IS") )).collect(Collectors.toList());
+            vinFeatureList = Stream.concat(vinFeatureList.stream() ,featureRequirementRepo.getFeatureRequirement(vin,feature.getFeatureCode()).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("yes") )).collect(Collectors.toList());
         }
 
         return vinFeatureList;
@@ -45,7 +45,7 @@ public class VehicleFeatureService {
         List<VinFeature> vinFeatureList = new ArrayList<>();
 
         for(Feature feature: featureList){
-            vinFeatureList = Stream.concat(vinFeatureList.stream() ,featureRequirementRepo.getFeatureRequirement(vin,feature.getFeatureCode()).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("NOT") )).collect(Collectors.toList());
+            vinFeatureList = Stream.concat(vinFeatureList.stream() ,featureRequirementRepo.getFeatureRequirement(vin,feature.getFeatureCode()).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("no") )).collect(Collectors.toList());
         }
 
         return vinFeatureList;
@@ -79,7 +79,7 @@ public class VehicleFeatureService {
         List<VinFeature> compatibleIncompatibleVINList = new ArrayList<>();
 
         for(Vehicle vin: vehicleList) {
-            compatibleIncompatibleVINList = Stream.concat(compatibleIncompatibleVINList.stream(), featureRequirementRepo.getFeatureRequirement(vin.getVin(), feature).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("IS"))).collect(Collectors.toList());
+            compatibleIncompatibleVINList = Stream.concat(compatibleIncompatibleVINList.stream(), featureRequirementRepo.getFeatureRequirement(vin.getVin(), feature).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("yes"))).collect(Collectors.toList());
         }
 
 
@@ -90,7 +90,7 @@ public class VehicleFeatureService {
         List<VinFeature> compatibleIncompatibleVINList = new ArrayList<>();
 
         for(Vehicle vin: vehicleList) {
-            compatibleIncompatibleVINList = Stream.concat(compatibleIncompatibleVINList.stream(), featureRequirementRepo.getFeatureRequirement(vin.getVin(), feature).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("NOT"))).collect(Collectors.toList());
+            compatibleIncompatibleVINList = Stream.concat(compatibleIncompatibleVINList.stream(), featureRequirementRepo.getFeatureRequirement(vin.getVin(), feature).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("no"))).collect(Collectors.toList());
         }
 
 

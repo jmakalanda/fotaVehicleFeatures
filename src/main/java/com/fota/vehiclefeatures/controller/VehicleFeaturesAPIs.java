@@ -5,6 +5,10 @@ import com.fota.vehiclefeatures.entity.FeatureRequirement;
 import com.fota.vehiclefeatures.entity.Vehicle;
 import com.fota.vehiclefeatures.entity.VinFeature;
 import com.fota.vehiclefeatures.service.VehicleFeatureService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,54 +24,128 @@ public class VehicleFeaturesAPIs {
     @Autowired
     VehicleFeatureService vehicleFeatureService;
 
+
     //gives all the features that can be installed for the corresponding vin
     @GetMapping("/fota/vehicles/{vin}/installable")
-    public String getInstallableFeaturesForVehicle(@PathVariable(name = "vin") String vin,Model model) {
-        model.addAttribute( "vinFeatures", vehicleFeatureService.getAllInstallableFeatures(vin));
-        return "VINFeatureCompatibleIncompatible";
+    @ApiOperation(
+            value = "Find installable features by VIN",
+            notes = "gives all the features that can be installed for the corresponding vin",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiParam(name = "vin", value = "Vehicle identification number", required = true, type = "String", format = "uuid")
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<VinFeature> getInstallable(@PathVariable(name = "vin") String vin) {
+         return vehicleFeatureService.getAllInstallableFeatures(vin);
     }
     //gives all the features that cannot be installed for the corresponding vin
     @GetMapping("/fota/vehicles/{vin}/incompatible")
-    public String getIncompatibleFeaturesForVehicle(@PathVariable(name = "vin") String vin,Model model) {
-        model.addAttribute( "vinFeatures", vehicleFeatureService.getAllIncompatibleFeatures(vin));
-        return "VINFeatureCompatibleIncompatible";
+    @ApiOperation(
+            value = "Find incompatible features by VIN",
+            notes = "gives all the features that cannot be installed for the corresponding vin",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiParam(name = "vin", value = "Vehicle identification number", required = true, type = "String", format = "uuid")
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<VinFeature> getIncompatible(@PathVariable(name = "vin") String vin) {
+        return vehicleFeatureService.getAllIncompatibleFeatures(vin);
     }
     //gives all features that can/cannot be installed for the corresponding vin
     @GetMapping("/fota/vehicles/{vin}")
-    public String getAllFeaturesForVehicle(@PathVariable(name = "vin") String vin,Model model) {
-        model.addAttribute( "vinFeatures", vehicleFeatureService.getAllInstallableAndIncompatibleFeatures(vin));
-        return "VINFeatureCompatibleIncompatible";
+    @ApiOperation(
+            value = "Find all features by VIN",
+            notes = "gives all features that can/cannot be installed for the corresponding vin",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiParam(name = "vin", value = "Vehicle identification number", required = true, type = "String", format = "uuid")
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<VinFeature> getFeatures(@PathVariable(name = "vin") String vin) {
+        return vehicleFeatureService.getAllInstallableAndIncompatibleFeatures(vin);
+        //return "VINFeatureCompatibleIncompatible";
     }
     //returns a list of all vehicles
     @GetMapping("/fota/vehicles")
-    public String getVehicles(Model model) {
-        model.addAttribute( "vehicles", vehicleFeatureService.getAllVehicleCodes());
-        return "AllVehicles";
+    @ApiOperation(
+            value = "Find all vehicles",
+            notes = "returns a list of all vehicles",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<Vehicle> getVehicles() {
+        return vehicleFeatureService.getAllVehicleCodes();
+        //return "AllVehicles";
     }
 
     //gives all the vins that can install the corresponding feature
     @GetMapping("/fota/features/{feature}/installable")
-    public String getVehiclesForInstallableFeature(@PathVariable(name = "feature") String feature, Model model) {
-        model.addAttribute( "vinFeatures", vehicleFeatureService.getAllVINsWithCompatibleFeatures(feature));
-        return "FeatureVINCompatibleIncompatible";
+    @ApiOperation(
+            value = "Find installable VIN's by feature code",
+            notes = "gives all the vins that can install the corresponding feature",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiParam(name = "feature", value = "Correspondent feature code", required = true, type = "string", format = "string")
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<VinFeature> getVinInstallable(@PathVariable(name = "feature") String feature) {
+        return vehicleFeatureService.getAllVINsWithCompatibleFeatures(feature);
+        //return "FeatureVINCompatibleIncompatible";
     }
     //gives all the vins that cannot install the corresponding feature
     @GetMapping("/fota/features/{feature}/incompatible")
-    public String getVehicleIncompatibleFeatures(@PathVariable(name = "feature") String feature, Model model) {
-        model.addAttribute( "vinFeatures", vehicleFeatureService.getAllVINsWithIncompatibleFeatures(feature));
-        return "FeatureVINCompatibleIncompatible";
+    @ApiOperation(
+            value = "Find incompatible VIN's by feature code",
+            notes = "gives all the vins that cannot install the corresponding feature",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiParam(name = "feature", value = "Correspondent feature code", required = true, type = "string", format = "string")
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<VinFeature> getVinIncompatible(@PathVariable(name = "feature") String feature) {
+       return vehicleFeatureService.getAllVINsWithIncompatibleFeatures(feature);
     }
     //gives all vins that can/cannot install the corresponding feature
     @GetMapping("/fota/features/{feature}")
-    public String getVehicleFeatures(@PathVariable(name = "feature") String feature, Model model) {
-        model.addAttribute( "vinFeatures", vehicleFeatureService.getAllVINsWithCompatibleAndIncompatibleFeatures(feature));
-        return "FeatureVINCompatibleIncompatible";
+    @ApiOperation(
+            value = "Find all VIN's by feature code",
+            notes = "gives all the vins that can install the corresponding feature",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiParam(name = "feature", value = "Correspondent feature code", required = true, type = "string", format = "string")
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<VinFeature> getAllVin(@PathVariable(name = "feature") String feature) {
+        return vehicleFeatureService.getAllVINsWithCompatibleAndIncompatibleFeatures(feature);
     }
     //returns a list of all features.
     @GetMapping("/fota/features")
-    public String  getFeatures(Model model) {
-        model.addAttribute( "features", vehicleFeatureService.getAllFeatureRequirements());
-        return "AllFeatures";
+    @ApiOperation(
+            value = "Find all features",
+            notes = "returns a list of all feature codes",
+            tags = {"fota"},
+            produces = "application/json"
+
+    )
+    @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
+    @ResponseBody
+    public List<Feature>  getFeatures() {
+        return  vehicleFeatureService.getAllFeatureRequirements();
     }
 
 }
