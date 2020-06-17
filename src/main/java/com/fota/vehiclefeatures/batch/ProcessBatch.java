@@ -2,6 +2,7 @@ package com.fota.vehiclefeatures.batch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,52 +24,35 @@ import org.springframework.dao.DuplicateKeyException;
 public class ProcessBatch {
 
         private static final Logger log = LoggerFactory.getLogger(ProcessBatch.class);
-
         private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-        @Autowired
         JdbcTemplate jdbcTemplate;
+
+        @Value("${fota.batchfilepath}")
+        String batchFilePath;
+
+        @Value("${fota.processedfilepath}")
+        String batchProcessedFilePath;
+
+        @Autowired
+        public ProcessBatch(JdbcTemplate jdbcTemplate){
+            this.jdbcTemplate = jdbcTemplate;
+        }
 
         @Scheduled(fixedRate = 10000)
         public void processBatchFiles() {
-            log.info("The time is now {}", dateFormat.format(new Date()));
-//            File folder = new File("C:\\fota_batch");
-//            System.out.println("reading files before Java8 - Using listFiles() method");
-//            listAllFiles(folder);
-//            System.out.println("-------------------------------------------------");
-            System.out.println("reading files Java8 - Using Files.walk() method");
-            listAllFiles("C:\\fota_batch");
+            log.info("Polling at {}", dateFormat.format(new Date()));
+            listAllFiles(batchFilePath);
+
 
         }
-    // Uses listFiles before java8 method
-    public void listAllFiles(File folder){
-        System.out.println("In listAllfiles(File) method");
-        File[] fileNames = folder.listFiles();
-        for(File file : fileNames){
-            // if directory call the same method again
-            if(file.isDirectory()){
-                listAllFiles(file);
-            }else{
-                try {
-                    readContent(file);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
 
-            }
-        }
-    }
     // Uses Files.walk method
     public void listAllFiles(String path){
-        System.out.println("In listAllfiles(String path) method");
-
-
         try(Stream<Path> paths = Files.walk(Paths.get(path),1)) {
             paths.forEach(filePath -> {
                 if (Files.isRegularFile(filePath)) {
                     try {
-                        System.out.println("========= File name is ======== " + filePath.getFileName());
                         if (isValidSoftCodeFileName(filePath)){
 
                             List<String> lines = readContent(filePath);
@@ -82,7 +66,7 @@ public class ProcessBatch {
                                 }
                             }
                             //move file
-                            System.out.println("Soft Code file " + filePath.getFileName().toString() +" completed!");
+                            log.info("Soft Code file " + filePath.getFileName().toString() +" completed!");
                             moveFileToProcessed(filePath);
                         }else if (isValidHardCodeFileName(filePath)){
                             List<String> lines = readContent(filePath);
@@ -92,14 +76,13 @@ public class ProcessBatch {
                                 try {
                                     jdbcTemplate.execute("INSERT INTO VEHICLE_HARD_SOFT_CODES (VIN,SOFT_HARD_CODE, SOFT_HARD_FLAG) VALUES ('" + strings[0] + "','" + strings[1] + "','H')");
                                 }catch(DuplicateKeyException e){
-                                    //System.out.println("inserted row already exist H ==========");
                                 }
                             }
+                            log.info("Hard Code file " + filePath.getFileName().toString() +" completed!");
                             //move file
-                            System.out.println("Hard Code file " + filePath.getFileName().toString() +" completed!");
                             moveFileToProcessed(filePath);
                         }else{
-                            System.out.println("File name incorrect : " + filePath.getFileName());
+                            log.error("File name incorrect : " + filePath.getFileName());
                         }
 
                     } catch (Exception e) {
@@ -114,39 +97,23 @@ public class ProcessBatch {
         }
     }
 
-    public static void moveFileToProcessed(Path sourceFilePath) {
+    public void moveFileToProcessed(Path sourceFilePath) {
 
-       // Path  = Paths.get(path.toString());
-        Path targetFilePath = Paths.get("C:\\fota_batch\\processed\\"+ sourceFilePath.getFileName().toString());
-
-        System.out.println("++++++++++++ The file will move from "+ sourceFilePath.toString() + " to " + sourceFilePath.toString());
+        Path targetFilePath = Paths.get(batchProcessedFilePath + sourceFilePath.getFileName().toString());
 
         try {
             Files.move(sourceFilePath, targetFilePath);
         } catch (FileAlreadyExistsException ex) {
-            System.out.println("Target file already exists");
+            log.error("Target file already exists");
         } catch (IOException ex) {
-            System.out.format("I/O error: %s%n", ex);
+            log.error("I/O error: %s%n", ex);
         }
     }
 
-    public void readContent(File file) throws IOException{
-        System.out.println("read file " + file.getCanonicalPath() );
-        try(BufferedReader br  = new BufferedReader(new FileReader(file))){
-            String strLine;
-            // Read lines from the file, returns null when end of stream
-            // is reached
-            while((strLine = br.readLine()) != null){
-                System.out.println("Line is - " + strLine);
-            }
-        }
-    }
 
     public List<String> readContent(Path filePath) throws IOException{
-        System.out.println("read file " + filePath);
+        log.info("read file " + filePath);
         List<String> lines = Files.readAllLines(filePath);
-//        for(String line: fileList)
-//            System.out.println("" + line);
         return lines;
 
     }

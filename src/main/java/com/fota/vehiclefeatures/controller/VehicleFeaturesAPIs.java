@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.awt.*;
 import java.util.List;
 
-@Controller
+@RestController
 public class VehicleFeaturesAPIs {
     VehicleFeatureService vehicleFeatureService;
 
@@ -42,7 +43,6 @@ public class VehicleFeaturesAPIs {
     )
     @ApiParam(name = "vin", value = "Vehicle identification number", required = true, type = "String", format = "uuid")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public List<VinFeature> getInstallable(@PathVariable(name = "vin") String vin) {
          return vehicleFeatureService.getAllInstallableFeatures(vin);
     }
@@ -57,7 +57,6 @@ public class VehicleFeaturesAPIs {
     )
     @ApiParam(name = "vin", value = "Vehicle identification number", required = true, type = "String", format = "uuid")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public List<VinFeature> getIncompatible(@PathVariable(name = "vin") String vin) {
         return vehicleFeatureService.getAllIncompatibleFeatures(vin);
     }
@@ -72,7 +71,6 @@ public class VehicleFeaturesAPIs {
     )
     @ApiParam(name = "vin", value = "Vehicle identification number", required = true, type = "String", format = "uuid")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public List<VinFeature> getFeatures(@PathVariable(name = "vin") String vin) {
         return vehicleFeatureService.getAllInstallableAndIncompatibleFeatures(vin);
         //return "VINFeatureCompatibleIncompatible";
@@ -87,7 +85,6 @@ public class VehicleFeaturesAPIs {
 
     )
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public Page<Vehicle> getVehicles(Pageable pageable) {
         return vehicleFeatureService.getAllVehicleCodes(pageable);
         //return "AllVehicles";
@@ -104,7 +101,6 @@ public class VehicleFeaturesAPIs {
     )
     @ApiParam(name = "feature", value = "Correspondent feature code", required = true, type = "string", format = "string")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public List<VinFeature> getVinInstallable(@PathVariable(name = "feature") String feature) {
         return vehicleFeatureService.getAllVINsWithCompatibleFeatures(feature);
         //return "FeatureVINCompatibleIncompatible";
@@ -120,7 +116,6 @@ public class VehicleFeaturesAPIs {
     )
     @ApiParam(name = "feature", value = "Correspondent feature code", required = true, type = "string", format = "string")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public List<VinFeature> getVinIncompatible(@PathVariable(name = "feature") String feature) {
        return vehicleFeatureService.getAllVINsWithIncompatibleFeatures(feature);
     }
@@ -135,7 +130,6 @@ public class VehicleFeaturesAPIs {
     )
     @ApiParam(name = "feature", value = "Correspondent feature code", required = true, type = "string", format = "string")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public List<VinFeature> getAllVin(@PathVariable(name = "feature") String feature) {
         return vehicleFeatureService.getAllVINsWithCompatibleAndIncompatibleFeatures(feature);
     }
@@ -149,7 +143,6 @@ public class VehicleFeaturesAPIs {
 
     )
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
-    @ResponseBody
     public Page<Feature>  getFeatures(Pageable pageable) {
         return  vehicleFeatureService.getAllFeatureRequirements(pageable);
     }
