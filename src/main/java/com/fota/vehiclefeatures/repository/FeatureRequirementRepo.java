@@ -2,10 +2,14 @@ package com.fota.vehiclefeatures.repository;
 
 import com.fota.vehiclefeatures.entity.Feature;
 import com.fota.vehiclefeatures.entity.FeatureRequirement;
+import com.fota.vehiclefeatures.entity.Vehicle;
 import com.fota.vehiclefeatures.entity.VinFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -52,16 +56,22 @@ public class FeatureRequirementRepo {
         ,(rs, rowNum) -> new Feature(rs.getString("FEATURE_CODE"))
         );
     }
-/*                "SELECT V.VIN, F.FEATURE_CODE, V.SOFT_HARD_CODE, F.SOFT_HARD_FLAG " +
-                "FROM FEATURE_REQUIREMENT F, VEHICLE_HARD_SOFT_CODES V "+
-                "WHERE "+
-                "F.SOFT_HARD_CODE IN (SELECT FRP.SOFT_HARD_CODE FROM FEATURE_REQUIREMENT FRP WHERE  FRP.PRESENT_NOTPRESENT_FLAG='P' AND FRP.FEATURE_CODE ='"+feature+"') "+
-                "AND "+
-                "F.SOFT_HARD_CODE NOT IN (SELECT FRN.SOFT_HARD_CODE FROM FEATURE_REQUIREMENT FRN WHERE  FRN.PRESENT_NOTPRESENT_FLAG='N' AND FRN.FEATURE_CODE ='"+feature+"') "+
-                "AND "+
-                "V.VIN = '"+ vin +"' "+
-                "AND "+
-                "F.FEATURE_CODE ='"+feature+"' "+
-                "AND "+
-                "F.SOFT_HARD_CODE = V.SOFT_HARD_CODE"*/
+    public Page<Feature> getAllFeatures(Pageable pageable){
+
+        String rowCountSql = "SELECT count(DISTINCT (FEATURE_CODE)) FROM FEATURE_REQUIREMENT";
+
+        int total = jdbcTemplate.queryForObject(
+                rowCountSql,
+                (rs, rowNum) -> rs.getInt(1)
+        );
+
+        List<Feature> vinList = jdbcTemplate.query(
+                "SELECT DISTINCT (FEATURE_CODE) FROM FEATURE_REQUIREMENT " +
+                        "LIMIT " + pageable.getPageSize() + " " +
+                        "OFFSET " + pageable.getOffset()
+                ,
+                (rs, rowNum) -> new Feature(rs.getString("FEATURE_CODE"))
+        );
+        return new PageImpl<>(vinList, pageable, total);
+    }
 }

@@ -15,14 +15,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.awt.*;
 import java.util.List;
 
 @Controller
 public class VehicleFeaturesAPIs {
+    VehicleFeatureService vehicleFeatureService;
 
     @Autowired
-    VehicleFeatureService vehicleFeatureService;
+    public VehicleFeaturesAPIs(VehicleFeatureService vehicleFeatureService){
+        this.vehicleFeatureService = vehicleFeatureService;
+    }
 
 
     //gives all the features that can be installed for the corresponding vin
@@ -82,8 +88,8 @@ public class VehicleFeaturesAPIs {
     )
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
     @ResponseBody
-    public List<Vehicle> getVehicles() {
-        return vehicleFeatureService.getAllVehicleCodes();
+    public Page<Vehicle> getVehicles(Pageable pageable) {
+        return vehicleFeatureService.getAllVehicleCodes(pageable);
         //return "AllVehicles";
     }
 
@@ -144,8 +150,8 @@ public class VehicleFeaturesAPIs {
     )
     @ApiResponses(value = {@ApiResponse(code = 200,message = "successful operation") , @ApiResponse(code = 404, message = "Not found")})
     @ResponseBody
-    public List<Feature>  getFeatures() {
-        return  vehicleFeatureService.getAllFeatureRequirements();
+    public Page<Feature>  getFeatures(Pageable pageable) {
+        return  vehicleFeatureService.getAllFeatureRequirements(pageable);
     }
 
 }

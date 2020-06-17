@@ -6,6 +6,9 @@ import com.fota.vehiclefeatures.entity.VinFeature;
 import com.fota.vehiclefeatures.repository.FeatureRequirementRepo;
 import com.fota.vehiclefeatures.repository.VehicleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,19 +23,19 @@ public class VehicleFeatureService {
     FeatureRequirementRepo featureRequirementRepo;
     @Autowired
     VehicleRepo vehicleRepo;
-    public List<Feature> getAllFeatureRequirements(){
-        return featureRequirementRepo.getAllFeatures();
+    public Page<Feature> getAllFeatureRequirements(Pageable pageable){
+        //return featureRequirementRepo.getAllFeatures();
+        return featureRequirementRepo.getAllFeatures(pageable);
     }
 
-    public List<Vehicle> getAllVehicleCodes(){
-        return vehicleRepo.getAll();
+    public Page<Vehicle> getAllVehicleCodes(Pageable pagable){
+        return vehicleRepo.getAll(pagable);
     }
 
 
     public List<VinFeature> getAllInstallableFeatures(String vin){
         List<Feature> featureList = featureRequirementRepo.getAllFeatures();
         List<VinFeature> vinFeatureList = new ArrayList<>();
-
         for(Feature feature: featureList){
             vinFeatureList = Stream.concat(vinFeatureList.stream() ,featureRequirementRepo.getFeatureRequirement(vin,feature.getFeatureCode()).stream().filter(vinFeature -> vinFeature.getIsCompatible().equals("yes") )).collect(Collectors.toList());
         }
